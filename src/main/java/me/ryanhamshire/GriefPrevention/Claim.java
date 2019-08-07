@@ -802,7 +802,7 @@ public class Claim
 		
 		//count current entities (ignoring players)
 		int totalEntities = 0;
-		ArrayList<Chunk> chunks = this.getChunks();
+		ArrayList<Chunk> chunks = this.getChunks(true);
 		for(Chunk chunk : chunks)
 		{
 			Entity [] entities = chunk.getEntities();
@@ -941,12 +941,36 @@ public class Claim
         {
             for(int z = lesserChunk.getZ(); z <= greaterChunk.getZ(); z++)
             {
-                chunks.add(world.getChunkAt(x, z));
+            	chunks.add(world.getChunkAt(x, z));
             }
         }
         
         return chunks;
     }
+
+    public ArrayList<Chunk> getChunks(boolean onlyLoaded){
+    	if(!onlyLoaded){
+    		return getChunks();
+		} else {
+			ArrayList<Chunk> chunks = new ArrayList<Chunk>();
+
+			World world = this.getLesserBoundaryCorner().getWorld();
+			Chunk lesserChunk = this.getLesserBoundaryCorner().getChunk();
+			Chunk greaterChunk = this.getGreaterBoundaryCorner().getChunk();
+
+			for(int x = lesserChunk.getX(); x <= greaterChunk.getX(); x++)
+			{
+				for(int z = lesserChunk.getZ(); z <= greaterChunk.getZ(); z++)
+				{
+					if(world.isChunkLoaded(x, z)){
+						chunks.add(world.getChunkAt(x, z));
+					}
+				}
+			}
+
+			return chunks;
+		}
+	}
 
     ArrayList<Long> getChunkHashes()
     {
